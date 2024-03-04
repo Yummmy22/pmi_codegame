@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "CanICode.sln"
+    "dotnet.defaultSolution": "pmi_codegame.sln"
 }
