@@ -14,6 +14,7 @@ public class CommandListToggleTMP : MonoBehaviour
     {
         // Add a click listener to the button which will call the ToggleText function
         commandListButton.onClick.AddListener(ToggleText);
+        commandTextTMP.gameObject.SetActive(!isTextVisible); 
         UpdateTextVisibility();
     }
 
