@@ -3,9 +3,8 @@ using UnityEngine;
 public class RobotController : MonoBehaviour
 {
     public float tileSize = 1.0f;
-    public float gravityValue = -9.81f;
-    public CharacterController controller;
-    public float rotationSpeed = 90f; // Degrees per second
+    public CharacterController controller; // Ensure this is the Unity CharacterController component if used for movement
+    public float rotationSpeed = 90f; // Degrees per second, adjust as needed
     private Animator animator;
     private Vector3 targetPosition;
     private bool isMoving = false;
@@ -14,6 +13,8 @@ public class RobotController : MonoBehaviour
 
     private void Start()
     {
+        Cursor.visible = true; // Make the cursor visible
+        Cursor.lockState = CursorLockMode.None; // Unlock the cursor so it can move freely
         targetPosition = transform.position;
         animator = GetComponent<Animator>();
         targetRotation = transform.rotation; // Initialize target rotation
@@ -21,73 +22,65 @@ public class RobotController : MonoBehaviour
 
     void Update()
     {
-        if (!isMoving && Input.anyKeyDown)
-        {
-            RotateCharacter();
-        }
-
-        if (transform.position == targetPosition && isMoving)
-        {
-            isMoving = false;
-            animator.SetBool("isMoving", false);
-            animator.SetBool("isBack", false);
-        }
+        Cursor.visible = true; // Make the cursor visible
+        Cursor.lockState = CursorLockMode.None; // Unlock the cursor so it can move freely
+        // Removed the keyboard input from here to keep rotation and movement logic separate
 
         // Smoothly rotate towards the target rotation
         if (isRotating)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 720f / 360f);
-            // Check if the rotation is close enough to the target rotation
-            if (Quaternion.Angle(transform.rotation, targetRotation) < 1.0f) // 1.0f is the tolerance, adjust as needed
-            {
-                transform.rotation = targetRotation; // Snap to the target rotation to avoid overshooting
-                isRotating = false; // Stop the rotation
-                // Reset the animator parameters
-                animator.SetBool("isRight", false);
-                animator.SetBool("isLeft", false);
-            }
+            RotateTowardsTarget();
+        }
+
+        // Handle the movement
+        if (isMoving)
+        {
+            MoveTowardsTarget();
         }
     }
 
-    void RotateCharacter()
+    public void MoveUp()
     {
-        if (isRotating)
-        {
-            return;
-        }
+        targetPosition += transform.forward * tileSize;
+        BeginMovement();
+    }
 
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+    public void MoveDown()
+    {
+        targetPosition -= transform.forward * tileSize;
+        BeginMovement(isBackward: true);
+    }
+
+    public void RotateLeft()
+    {
+        targetRotation *= Quaternion.Euler(0, -90, 0);
+        BeginRotation(isLeft: true);
+    }
+
+    public void RotateRight()
+    {
+        targetRotation *= Quaternion.Euler(0, 90, 0);
+        BeginRotation();
+    }
+
+    private void BeginMovement(bool isBackward = false)
+    {
+        if (!isMoving) // Start moving if not already doing so
         {
-            targetRotation *= Quaternion.Euler(0, 90, 0); // Update target rotation
-            isRotating = true; // Indicate that rotation has started
-            animator.SetBool("isRight", true);
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            targetRotation *= Quaternion.Euler(0, -90, 0); // Update target rotation
-            isRotating = true; // Indicate that rotation has started
-            animator.SetBool("isLeft", true);
-        }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            targetPosition += transform.forward * tileSize;
             isMoving = true;
             animator.SetBool("isMoving", true);
+            animator.SetBool("isBack", isBackward);
+            StartCoroutine(MoveToPosition(targetPosition));
         }
+    }
 
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+    private void BeginRotation(bool isLeft = false)
+    {
+        if (!isRotating) // Start rotating if not already doing so
         {
-            targetPosition -= transform.forward * tileSize;
-            isMoving = true;
-            animator.SetBool("isBack", true);
-        }
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            StartCoroutine(MoveToPosition(targetPosition));
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            StartCoroutine(MoveToPosition(targetPosition));
+            isRotating = true;
+            animator.SetBool("isRight", !isLeft);
+            animator.SetBool("isLeft", isLeft);
         }
     }
 
@@ -98,7 +91,34 @@ public class RobotController : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, target, 1f * Time.deltaTime);
             yield return null;
         }
-        // Movement has ended, reset animations here if needed
+        isMoving = false;
         animator.SetBool("isMoving", false);
+        animator.SetBool("isBack", false);
+    }
+
+    private void RotateTowardsTarget()
+    {
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        if (Quaternion.Angle(transform.rotation, targetRotation) < 1.0f) // Adjust tolerance as needed
+        {
+            transform.rotation = targetRotation;
+            isRotating = false;
+            animator.SetBool("isRight", false);
+            animator.SetBool("isLeft", false);
+        }
+    }
+
+    private void MoveTowardsTarget()
+    {
+        if (Vector3.Distance(transform.position, targetPosition) > 0.01f) // Small tolerance to ensure the position is reached
+        {
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, 1f * Time.deltaTime);
+        }
+        else
+        {
+            isMoving = false;
+            animator.SetBool("isMoving", false);
+            animator.SetBool("isBack", false);
+        }
     }
 }
