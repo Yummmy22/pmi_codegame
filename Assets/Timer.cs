@@ -7,14 +7,22 @@ using TMPro;
 public class Timer : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI timerText;
-    [SerializeField] GameObject starPrefab; // Prefab UI Image untuk bintang
-    [SerializeField] Transform starParent; // Parent untuk semua bintang
+    [SerializeField] GameObject starPrefab1; // Prefab UI Image untuk bintang
+    [SerializeField] GameObject starPrefab2; // Prefab UI Image untuk bintang
+    [SerializeField] GameObject starPrefab3; // Prefab UI Image untuk bintang
+    [SerializeField] GameObject gameOver;
+    [SerializeField] GameObject inputField;
     [SerializeField] float initialTime;
     [SerializeField] int maxStars; // Jumlah maksimum bintang yang mungkin
     private float remainingTime;
     private bool isTimerActive = false;
-    private int score;
-
+    void Start() {
+        starPrefab1.SetActive(false);
+        starPrefab2.SetActive(false);
+        starPrefab3.SetActive(false);
+        gameOver.SetActive(false);
+        inputField.SetActive(false);
+    }
     void Update()
     {
         // Cek apakah timer aktif sebelum melakukan update
@@ -27,7 +35,7 @@ public class Timer : MonoBehaviour
             else
             {
                 remainingTime = 0;
-                // GameOver();
+                gameOver.SetActive(true);
                 timerText.color = Color.red;
                 CalculateScore(); // Hitung skor saat permainan berakhir
                 isTimerActive = false;
@@ -46,45 +54,37 @@ public class Timer : MonoBehaviour
             {
                 remainingTime = initialTime;
                 isTimerActive = true;
+                inputField.SetActive(true);
             }
         }
     }
 
     // Method untuk menghitung skor
-    void CalculateScore()
+    public void CalculateScore()
     {
         float timePercentage = remainingTime / initialTime; // Hitung persentase waktu tersisa
-
+        Debug.Log("Time Percentage: " + timePercentage);
         // Tentukan jumlah bintang berdasarkan rentang waktu
         if (timePercentage >= 0.67f) // 67% atau lebih, 3 bintang
         {
-            score = 3;
+            starPrefab1.SetActive(true);
+            starPrefab2.SetActive(true);
+            starPrefab3.SetActive(true);
         }
         else if (timePercentage >= 0.33f) // 33% atau lebih, 2 bintang
         {
-            score = 2;
+            starPrefab1.SetActive(true);
+            starPrefab2.SetActive(true);
+            starPrefab3.SetActive(false);
         }
-        else // Kurang dari 33%, 1 bintang
+        else if (timePercentage >= 0.01f) // Kurang dari 33%, 1 bintang
         {
-            score = 1;
+            starPrefab1.SetActive(false);
+            starPrefab2.SetActive(true);
+            starPrefab3.SetActive(false);
         }
 
-        DisplayStars(score); // Tampilkan bintang sesuai dengan skor
-    }
-
-    // Method untuk menampilkan bintang
-    void DisplayStars(int numberOfStars)
-    {
-        // Hapus semua bintang sebelum menampilkan yang baru
-        foreach (Transform child in starParent)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // Instantiate UI Image bintang sejumlah numberOfStars
-        for (int i = 0; i < numberOfStars; i++)
-        {
-            Instantiate(starPrefab, starParent);
-        }
+        isTimerActive = false; // Hentikan timer
+        inputField.SetActive(false); // Hentikan input field
     }
 }
