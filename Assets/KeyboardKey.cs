@@ -43,7 +43,6 @@ public class KeyboardKey : MonoBehaviour
     {
         if (Input.GetKeyDown(TargetKey))
         {
-            Debug.Log("Key Down!");
             if (usingCooldown)
             {
                 if (!isCooldown)
@@ -60,7 +59,6 @@ public class KeyboardKey : MonoBehaviour
         }
         if (Input.GetKey(TargetKey))
         {
-            Debug.Log("Key Pressed!");
             if (usingCooldown)
             {
                 if (!isCooldown)
@@ -77,7 +75,6 @@ public class KeyboardKey : MonoBehaviour
         }
         if (Input.GetKeyUp(TargetKey))
         {
-            Debug.Log("Key Up!");
             if (usingCooldown)
             {
                 if (!isCooldown)
