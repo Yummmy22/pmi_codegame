@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -23,7 +24,7 @@ public class ConditionString : MonoBehaviour
 
     [Header("Condition Settings")]
     public bool ifSame;
-    public List<KeywordEventPair> KeywordEvents; // Use a list of KeywordEventPair
+    public List<KeywordEventPair> KeywordEvents;
 
     public void StartChecking()
     {
@@ -39,35 +40,38 @@ public class ConditionString : MonoBehaviour
     {
         if (Activated)
         {
-            foreach (var keywordEvent in KeywordEvents) // Iterate through all keyword-event pairs
+            bool isAnyTrueEventInvoked = false;
+            foreach (var keywordEvent in KeywordEvents)
             {
                 if (ifSame && CurrentVariable.CurrentValue == keywordEvent.Keyword)
                 {
-                    keywordEvent.TrueEvent?.Invoke(); // Invoke the True event for this keyword
+                    keywordEvent.TrueEvent?.Invoke();
+                    isAnyTrueEventInvoked = true;
                     return; // Exit the function after finding a match to prevent multiple events
                 }
-                else
+            }
+
+            if (!isAnyTrueEventInvoked)
+            {
+                // Sekarang langsung memicu FalseEvent tanpa delay
+                foreach (var keywordEvent in KeywordEvents)
                 {
-                    keywordEvent.FalseEvent?.Invoke(); // Invoke the False event if not matching
-                    // Note: If you want only one False event to trigger if none match, move this outside and trigger after the loop if no matches found
+                    keywordEvent.FalseEvent?.Invoke();
+                    break; // Break after invoking the first FalseEvent to prevent multiple invocations
                 }
             }
         }
     }
 
-    // Start is called before the first frame update
     void Start()
     {
         StartEvents?.Invoke();
         if (Activated)
         {
             StartChecking();
-            ConditionChecking();
-            StopChecking();
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         UpdateEvents?.Invoke();
