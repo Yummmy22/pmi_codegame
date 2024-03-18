@@ -47,7 +47,7 @@ public class Timer : MonoBehaviour
         }
 
         // Cek apakah tombol "Enter" ditekan
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             // Aktifkan timer jika belum aktif
             if (!isTimerActive)
