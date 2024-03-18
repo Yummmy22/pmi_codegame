@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -7,7 +6,7 @@ using UnityEngine.Events;
 [System.Serializable] // This makes the class show up in the Unity inspector
 public class KeywordEventPair
 {
-    public string Keyword;
+    public List<string> Keywords;
     public UnityEvent TrueEvent;
     public UnityEvent FalseEvent;
 }
@@ -23,8 +22,8 @@ public class ConditionString : MonoBehaviour
     public UnityEvent UpdateEvents;
 
     [Header("Condition Settings")]
-    public bool ifSame;
-    public List<KeywordEventPair> KeywordEvents;
+    // public bool ifSame;
+    public List<KeywordEventPair> KeywordEvents; // Use a list of KeywordEventPair
 
     public void StartChecking()
     {
@@ -36,42 +35,61 @@ public class ConditionString : MonoBehaviour
         Activated = false;
     }
 
-    void ConditionChecking()
+     void ConditionChecking()
     {
-        if (Activated)
+       if (Activated)
         {
-            bool isAnyTrueEventInvoked = false;
+            bool conditionMatched = false; // Menandai apakah ada kecocokan kondisi
+
+            // Iterasi melalui semua KeywordEventPair
             foreach (var keywordEvent in KeywordEvents)
             {
-                if (ifSame && CurrentVariable.CurrentValue == keywordEvent.Keyword)
+                bool allKeywordsMatched = true; // Menandai apakah semua kata kunci cocok
+
+                // Iterasi melalui semua kata kunci dalam KeywordEventPair
+                foreach (var keyword in keywordEvent.Keywords)
+                {
+                    // Cek apakah nilai CurrentValue sama dengan salah satu kata kunci yang ditentukan
+                    if (CurrentVariable.CurrentValue != keyword)
+                    {
+                        allKeywordsMatched = false;
+                        break; // Langsung keluar dari loop jika ada satu kata kunci yang tidak cocok
+                    }
+                }
+
+                // Jika semua kata kunci cocok, jalankan TrueEvent dan tandai bahwa ada kecocokan kondisi
+                if (allKeywordsMatched)
                 {
                     keywordEvent.TrueEvent?.Invoke();
-                    isAnyTrueEventInvoked = true;
-                    return; // Exit the function after finding a match to prevent multiple events
+                    conditionMatched = true;
+                    break; // Hentikan iterasi karena kondisi telah terpenuhi
                 }
             }
 
-            if (!isAnyTrueEventInvoked)
+            // Jika tidak ada kecocokan dengan semua keyword yang ditentukan, jalankan FalseEvent
+            if (!conditionMatched)
             {
-                // Sekarang langsung memicu FalseEvent tanpa delay
                 foreach (var keywordEvent in KeywordEvents)
                 {
                     keywordEvent.FalseEvent?.Invoke();
-                    break; // Break after invoking the first FalseEvent to prevent multiple invocations
                 }
             }
         }
     }
 
+    // Start is called before the first frame update
     void Start()
     {
         StartEvents?.Invoke();
         if (Activated)
         {
             StartChecking();
+            ConditionChecking();
+            StopChecking();
         }
     }
 
+    // Update is called once per frame
     void Update()
     {
         UpdateEvents?.Invoke();
