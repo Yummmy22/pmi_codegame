@@ -30,7 +30,7 @@ public class ConditionString : MonoBehaviour
     [Header("Condition Settings")]
     // public bool ifSame;
     public List<KeywordEventPair> KeywordEvents; // Use a list of KeywordEventPair
-    bool conditionMatched = false; // Flag to indicate if a condition has been matched
+    bool conditionMatched; // Flag to indicate if a condition has been matched
     public void StartChecking()
     {
         Activated = true;
@@ -43,37 +43,39 @@ public class ConditionString : MonoBehaviour
 
     void ConditionChecking()
     {
-        if (Activated)
+        if (Input.GetKeyDown(KeyCode.Return))
         {
-
-            // Iterate through all KeywordEventPairs
-            foreach (var keywordEventPair in KeywordEvents)
+            StartChecking();
+            if (Activated)
             {
-                // Iterate through all KeywordEvents within the KeywordEventPair
-                foreach (var keywordEvent in keywordEventPair.KeywordEvents)
-                {
-                    // Check if the CurrentVariable.CurrentValue matches the specified keyword
-                    if (CurrentVariable.CurrentValue == keywordEvent.Keyword)
-                    {
-                        keywordEvent.OnKeywordMatch?.Invoke(); // Use the new member name here
-                        conditionMatched = true;
-                        break; // Exit the inner loop if a keyword matches
-                    } else {
-                        conditionMatched = false;
-                    }
-                }
-
-            }
-            // If no keywords matched, trigger the global FalseEvent
-            if (conditionMatched == false)
-            {
-                print("");
+                // Iterate through all KeywordEventPairs
                 foreach (var keywordEventPair in KeywordEvents)
                 {
-                    keywordEventPair.FalseEvent?.Invoke();
-                    break; // Only need to invoke one global FalseEvent
+                    // Iterate through all KeywordEvents within the KeywordEventPair
+                    foreach (var keywordEvent in keywordEventPair.KeywordEvents)
+                    {
+                        // Check if the CurrentVariable.CurrentValue matches the specified keyword
+                        if (CurrentVariable.CurrentValue == keywordEvent.Keyword)
+                        {
+                            keywordEvent.OnKeywordMatch?.Invoke(); // Use the new member name here
+                            conditionMatched = true;
+                            break; // Exit the inner loop if a keyword matches
+                        } else {
+                            conditionMatched = false;
+                        }
+                    }
                 }
-            }
+                // If no keywords matched, trigger the global FalseEvent
+                if (conditionMatched == false)
+                {
+                    print("");
+                    foreach (var keywordEventPair in KeywordEvents)
+                    {
+                        keywordEventPair.FalseEvent?.Invoke();
+                        break; // Only need to invoke one global FalseEvent
+                    }
+                }
+            }   
         }
     }
 
@@ -92,10 +94,6 @@ public class ConditionString : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            StartChecking();
-            ConditionChecking();
-        }
+        ConditionChecking();
     }
 }
