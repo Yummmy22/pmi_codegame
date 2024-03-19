@@ -6,6 +6,7 @@ using TMPro;
 
 public class KeyboardKey : MonoBehaviour
 {
+    public TMP_InputField inputField;
     [Header("Key Settings")]
     public KeyCode TargetKey;
     public float Cooldown;
@@ -16,7 +17,6 @@ public class KeyboardKey : MonoBehaviour
     public UnityEvent OnKeyDown;
     public UnityEvent OnKeyPress;
     public UnityEvent OnKeyUp;
-    public TMP_InputField inputField;
 
     // Start is called before the first frame update
     void Start()
