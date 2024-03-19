@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class ConditionBoolean : MonoBehaviour
 {
-
+    public CalculationBoolean calculationBooleanScript;
     [Header("Variable Settings")]
     public CalculationBoolean CurrentVariable;
     public bool Activated;
@@ -30,34 +30,40 @@ public class ConditionBoolean : MonoBehaviour
 
     void ConditionChecking()
     {
-        if (Activated)
+        if (calculationBooleanScript.CurrentValue == false)
         {
-            if (CurrentVariable.CurrentValue == true)
+            if (Activated)
             {
-                TrueEvents?.Invoke();
-            }
-            if (CurrentVariable.CurrentValue == false)
-            {
-                FalseEvents?.Invoke();
+                if (CurrentVariable.CurrentValue == true)
+                {
+                    TrueEvents?.Invoke();
+                }
+                if (CurrentVariable.CurrentValue == false)
+                {
+                    FalseEvents?.Invoke();
+                }
             }
         }
     }
 
     // Start is called before the first frame update
-    void Start()
-    {
-        StartEvents?.Invoke();
-        if (Activated)
-        {
-            StartChecking();
-        } 
-    }
+    // void Start()
+    // {
+    //     StartEvents?.Invoke();
+    //     if (Activated)
+    //     {
+    //         StartChecking();
+    //     } 
+    // }
 
     // Update is called once per frame
     void Update()
     {
-        UpdateEvents?.Invoke();
-        ConditionChecking();
+        if (calculationBooleanScript.CurrentValue == false)
+        {
+            UpdateEvents?.Invoke();
+            ConditionChecking();
+        }
     }
 }
 

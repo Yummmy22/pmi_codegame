@@ -3,9 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[System.Serializable]
+public class KeywordEvent
+{
+    public string Keyword;
+    public UnityEvent OnKeywordMatch;
+}
+
+[System.Serializable]
+public class KeywordEventPair
+{
+    public List<KeywordEvent> KeywordEvents;
+    public UnityEvent FalseEvent;
+}
+
 public class ConditionString : MonoBehaviour
 {
-
     [Header("Variable Settings")]
     public CalculationString CurrentVariable;
     public bool Activated;
@@ -15,11 +28,9 @@ public class ConditionString : MonoBehaviour
     public UnityEvent UpdateEvents;
 
     [Header("Condition Settings")]
-    public bool ifSame;
-    public string CompareText;
-    public UnityEvent TrueEvents;
-    public UnityEvent FalseEvents;
-
+    // public bool ifSame;
+    public List<KeywordEventPair> KeywordEvents; // Use a list of KeywordEventPair
+    bool conditionMatched = false; // Flag to indicate if a condition has been matched
     public void StartChecking()
     {
         Activated = true;
@@ -34,15 +45,33 @@ public class ConditionString : MonoBehaviour
     {
         if (Activated)
         {
-            if (ifSame)
+
+            // Iterate through all KeywordEventPairs
+            foreach (var keywordEventPair in KeywordEvents)
             {
-                if (CurrentVariable.CurrentValue == CompareText)
+                // Iterate through all KeywordEvents within the KeywordEventPair
+                foreach (var keywordEvent in keywordEventPair.KeywordEvents)
                 {
-                    TrueEvents?.Invoke();
+                    // Check if the CurrentVariable.CurrentValue matches the specified keyword
+                    if (CurrentVariable.CurrentValue == keywordEvent.Keyword)
+                    {
+                        keywordEvent.OnKeywordMatch?.Invoke(); // Use the new member name here
+                        conditionMatched = true;
+                        break; // Exit the inner loop if a keyword matches
+                    } else {
+                        conditionMatched = false;
+                    }
                 }
-                if (CurrentVariable.CurrentValue != CompareText)
+
+            }
+            // If no keywords matched, trigger the global FalseEvent
+            if (conditionMatched == false)
+            {
+                print("");
+                foreach (var keywordEventPair in KeywordEvents)
                 {
-                    FalseEvents?.Invoke();
+                    keywordEventPair.FalseEvent?.Invoke();
+                    break; // Only need to invoke one global FalseEvent
                 }
             }
         }
@@ -55,6 +84,8 @@ public class ConditionString : MonoBehaviour
         if (Activated)
         {
             StartChecking();
+            ConditionChecking();
+            StopChecking();
         }
     }
 
