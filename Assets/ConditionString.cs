@@ -3,11 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-[System.Serializable] // This makes the class show up in the Unity inspector
+[System.Serializable]
+public class KeywordEvent
+{
+    public string Keyword;
+    public UnityEvent OnKeywordMatch;
+}
+
+[System.Serializable]
 public class KeywordEventPair
 {
-    public List<string> Keywords;
-    public UnityEvent TrueEvent;
+    public List<KeywordEvent> KeywordEvents;
     public UnityEvent FalseEvent;
 }
 
@@ -35,43 +41,40 @@ public class ConditionString : MonoBehaviour
         Activated = false;
     }
 
-     void ConditionChecking()
+    void ConditionChecking()
     {
-       if (Activated)
+        if (Activated)
         {
-            bool conditionMatched = false; // Menandai apakah ada kecocokan kondisi
+            bool conditionMatched = false; // Flag to indicate if a condition has been matched
 
-            // Iterasi melalui semua KeywordEventPair
-            foreach (var keywordEvent in KeywordEvents)
+            // Iterate through all KeywordEventPairs
+            foreach (var keywordEventPair in KeywordEvents)
             {
-                bool allKeywordsMatched = true; // Menandai apakah semua kata kunci cocok
-
-                // Iterasi melalui semua kata kunci dalam KeywordEventPair
-                foreach (var keyword in keywordEvent.Keywords)
+                // Iterate through all KeywordEvents within the KeywordEventPair
+                foreach (var keywordEvent in keywordEventPair.KeywordEvents)
                 {
-                    // Cek apakah nilai CurrentValue sama dengan salah satu kata kunci yang ditentukan
-                    if (CurrentVariable.CurrentValue != keyword)
+                    // Check if the CurrentVariable.CurrentValue matches the specified keyword
+                    if (CurrentVariable.CurrentValue == keywordEvent.Keyword)
                     {
-                        allKeywordsMatched = false;
-                        break; // Langsung keluar dari loop jika ada satu kata kunci yang tidak cocok
+                        keywordEvent.OnKeywordMatch?.Invoke(); // Use the new member name here
+                        conditionMatched = true;
+                        break; // Exit the inner loop if a keyword matches
                     }
                 }
 
-                // Jika semua kata kunci cocok, jalankan TrueEvent dan tandai bahwa ada kecocokan kondisi
-                if (allKeywordsMatched)
+                if (conditionMatched)
                 {
-                    keywordEvent.TrueEvent?.Invoke();
-                    conditionMatched = true;
-                    break; // Hentikan iterasi karena kondisi telah terpenuhi
+                    break; // Exit the outer loop if a condition has been matched
                 }
             }
 
-            // Jika tidak ada kecocokan dengan semua keyword yang ditentukan, jalankan FalseEvent
+            // If no keywords matched, trigger the global FalseEvent
             if (!conditionMatched)
             {
-                foreach (var keywordEvent in KeywordEvents)
+                foreach (var keywordEventPair in KeywordEvents)
                 {
-                    keywordEvent.FalseEvent?.Invoke();
+                    keywordEventPair.FalseEvent?.Invoke();
+                    break; // Only need to invoke one global FalseEvent
                 }
             }
         }
