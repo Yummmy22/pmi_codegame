@@ -37,6 +37,7 @@ public class KeywordChecker : MonoBehaviour
         }
         if (!ConditionHasMatched)
         {
+            CameraShaker.Invoke();
             FalseEvent.Invoke();
         }
         ConditionHasMatched = false; //reset condition

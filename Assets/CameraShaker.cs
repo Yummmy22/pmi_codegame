@@ -19,14 +19,8 @@ public class CameraShaker : MonoBehaviour{
     private void OnDisable() => Shake -= CameraShake;
     
     private void CameraShake(){
+        _camera.DOComplete();
         _camera.DOShakePosition(shakeDuration, _positionStrength);
         _camera.DOShakeRotation(shakeDuration, _rotationStrength);
-
-        StartCoroutine(StopShakeWithDelay(shakeDuration));
-    }
-
-    private IEnumerator StopShakeWithDelay(float delay){
-        yield return new WaitForSeconds (delay);
-        _camera.DOComplete();
     }
 }
