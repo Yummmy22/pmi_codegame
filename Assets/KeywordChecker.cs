@@ -16,11 +16,12 @@ public class KeywordEvents
 public class KeywordChecker : MonoBehaviour
 {
     public TMP_InputField InputField;
+    public AudioHandler audioHandler;
     public CalculationString m_string;
     public List<KeywordEvents> KeywordEvents;
     public UnityEvent FalseEvent;
     bool ConditionHasMatched;
-    // Start is called before the first frame update
+    
     public void CheckKeywords()
     {
         print(m_string.CurrentValue);
@@ -30,6 +31,7 @@ public class KeywordChecker : MonoBehaviour
             {
                 keywordEvent.OnKeywordMatch.Invoke();
                 ConditionHasMatched = true;
+                audioHandler.PlayCorrectSound();
                 InputField.text = "";
                 break;
             }
@@ -38,6 +40,7 @@ public class KeywordChecker : MonoBehaviour
         if (!ConditionHasMatched)
         {
             CameraShaker.Invoke();
+            audioHandler.PlayWrongSound();
             FalseEvent.Invoke();
         }
         ConditionHasMatched = false; //reset condition
