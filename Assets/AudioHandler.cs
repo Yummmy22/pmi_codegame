@@ -3,33 +3,24 @@ using UnityEngine;
 public class AudioHandler : MonoBehaviour
 {
     // Variabel untuk menampung audio clips
-    public AudioClip correctSound;
-    public AudioClip wrongSound;
-
-    private AudioSource audioSource;
-
-    // Fungsi ini dipanggil saat script instance di-load
-    void Awake()
-    {
-        // Mendapatkan komponen AudioSource dari game object
-        audioSource = GetComponent<AudioSource>();
-    }
+    public AudioSource correctSound;
+    public AudioSource wrongSound;
 
     // Fungsi untuk memainkan correct sound
     public void PlayCorrectSound()
     {
-        if (correctSound != null)
+        if (correctSound != null && !correctSound.isPlaying)
         {
-            audioSource.PlayOneShot(correctSound);
+            correctSound.Play();
         }
     }
 
     // Fungsi untuk memainkan wrong sound
     public void PlayWrongSound()
     {
-        if (wrongSound != null)
+        if (wrongSound != null && !wrongSound.isPlaying)
         {
-            audioSource.PlayOneShot(wrongSound);
+            wrongSound.Play();
         }
     }
 }
