@@ -1,0 +1,4 @@
+<Server>
+	<Apache>http://localhost/coder/api/</Apache>
+	<Playfab>5DF71</Playfab>
+</Server>
