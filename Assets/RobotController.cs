@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class RobotController : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class RobotController : MonoBehaviour
     private bool isMoving = false;
     private Quaternion targetRotation; // Target rotation
     private bool isRotating = false; // Flag to indicate if currently rotating
+    public UnityEvent onPlayerEnterLaser;
 
     private void Start()
     {
@@ -119,6 +121,13 @@ public class RobotController : MonoBehaviour
             isMoving = false;
             animator.SetBool("isMoving", false);
             animator.SetBool("isBack", false);
+        }
+    }
+
+    void OnTriggerEnter (Collider other){
+        if (other.CompareTag("Laser"))
+        {
+            onPlayerEnterLaser.Invoke();
         }
     }
 }

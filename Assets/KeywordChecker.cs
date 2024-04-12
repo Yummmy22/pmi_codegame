@@ -24,7 +24,6 @@ public class KeywordChecker : MonoBehaviour
     
     public void CheckKeywords()
     {
-        print(m_string.CurrentValue);
         foreach (var keywordEvent in KeywordEvents)
         {
             if (keywordEvent.Keyword == m_string.CurrentValue)
