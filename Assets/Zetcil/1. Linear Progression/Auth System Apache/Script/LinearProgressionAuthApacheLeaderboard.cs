@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro; // Add this namespace to access TextMesh Pro components
 using UnityEngine.Networking;
 using UnityEngine.Events;
 
 public class LinearProgressionAuthApacheLeaderboard : MonoBehaviour
 {
-
     [Header("Auth Server")]
     [TextArea(3, 4)]
     public string Apache = "http://localhost/";
@@ -15,7 +15,7 @@ public class LinearProgressionAuthApacheLeaderboard : MonoBehaviour
 
     [Header("Register Settings")]
     public InputField Username;
-    public InputField Score;
+    public TMP_Text Score; // Change the type from Text to TMP_Text
 
     [Header("Field Settings")]
     public string FieldUsername = "name";
@@ -65,8 +65,6 @@ public class LinearProgressionAuthApacheLeaderboard : MonoBehaviour
         {
             yield return www.SendWebRequest();
 
-
-            //-- 2019
             if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
             {
                 RequestStatus = www.error;
@@ -92,5 +90,4 @@ public class LinearProgressionAuthApacheLeaderboard : MonoBehaviour
             }
         }
     }
-
 }
