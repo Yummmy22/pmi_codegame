@@ -16,10 +16,13 @@ public class LinearProgressionAuthApacheLeaderboard : MonoBehaviour
     [Header("Register Settings")]
     public InputField Username;
     public TMP_Text Score; // Change the type from Text to TMP_Text
+    public TMP_Text Scene;
 
     [Header("Field Settings")]
     public string FieldUsername = "name";
     public string FieldScore = "score";
+    public string FieldScene = "scene";
+
 
     [Header("Events")]
     public UnityEvent LeaderboardSuccessEvent;
@@ -60,6 +63,7 @@ public class LinearProgressionAuthApacheLeaderboard : MonoBehaviour
         WWWForm form = new WWWForm();
         form.AddField(FieldUsername, Username.text);
         form.AddField(FieldScore, Score.text);
+        form.AddField(FieldScene, Scene.text);
 
         using (UnityWebRequest www = UnityWebRequest.Post(Apache + Segment, form))
         {
