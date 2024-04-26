@@ -79,6 +79,5 @@ namespace ReadyPlayerMe.Samples.QuickStart
             avatarUrl = url.Trim(' ');
             avatarObjectLoader.LoadAvatar(avatarUrl);
         }
-
     }
 }
