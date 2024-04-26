@@ -15,7 +15,7 @@ public class TriggerConversation : MonoBehaviour
     // Start is called before the first frame update
     void Update()
     {
-        if (Input.anyKey && !conversationStarted)
+        if (Input.GetKeyDown(KeyCode.Space) && !conversationStarted)
         {
             conversationStarted = true;
             onConversationStart.Invoke();
