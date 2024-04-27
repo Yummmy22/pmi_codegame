@@ -15,4 +15,14 @@ public class Expression : MonoBehaviour
     {
         animator.SetBool("isThinking", true);
     }
+
+    public void Talking()
+    {
+        animator.SetBool("isTalking", true);
+    }
+
+    public void Waving()
+    {
+        animator.SetBool("isWaving", true);
+    }
 }
