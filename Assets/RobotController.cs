@@ -40,15 +40,15 @@ public class RobotController : MonoBehaviour
         }
     }
 
-    public void MoveUp()
+    public void MoveUp(int tiles = 1)
     {
-        targetPosition += transform.forward * tileSize;
+        targetPosition += transform.forward * tileSize * tiles;
         BeginMovement();
     }
 
-    public void MoveDown()
+    public void MoveDown(int tiles = 1)
     {
-        targetPosition -= transform.forward * tileSize;
+        targetPosition -= transform.forward * tileSize * tiles;
         BeginMovement(isBackward: true);
     }
 
